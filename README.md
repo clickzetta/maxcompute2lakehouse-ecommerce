@@ -1,293 +1,136 @@
-# DataWorks & MaxCompute Practice Project
+# maxcompute2lakehouse-ecommerce
 
-A comprehensive, production-ready learning repository for Alibaba Cloud DataWorks and MaxCompute with realistic sample data, ETL workflows, and advanced features.
+MaxCompute + DataWorks 电商数据工程项目迁移到 ClickZetta Lakehouse 的完整实战案例。
 
-## 🎯 Project Status: 100% Core Complete ✅
+**迁移文档**：[MaxCompute → Lakehouse 迁移实战：电商数据工程项目](https://4v2dmg3x2e.k.topthink.com/-/book/k7pl9zonpy/edit)
 
-This project provides a complete learning environment with:
-- **Realistic sample datasets** for hands-on practice
-- **Comprehensive SQL examples** from basic to advanced operations  
-- **Complete ETL framework** with data quality monitoring
-- **Custom UDF examples** for Java and Python
-- **Automated workflow orchestration** with DataWorks
-- **Professional documentation** and troubleshooting guides
-
-## 📁 Project Structure
-
-```
-dataworks-maxcompute-practice/
-├── data/                     # Sample datasets (8 files)
-│   ├── customers.csv         # Customer master data
-│   ├── products.csv          # Product catalog  
-│   ├── orders.csv            # Order transactions
-│   ├── order_items.csv       # Order line items
-│   ├── web_sessions.csv      # User session analytics
-│   ├── page_views.csv        # Page view events
-│   ├── user_events.csv       # Custom interaction events
-│   └── suppliers.csv         # Supplier information
-├── sql/                      # MaxCompute SQL scripts (6 scripts)
-│   ├── 01_create_tables.sql  # Table creation and schemas
-│   ├── 02_load_data.sql      # Data loading techniques
-│   ├── 03_basic_queries.sql  # Basic SQL operations
-│   ├── 04_joins_analytics.sql # Advanced analytics
-│   ├── 05_etl_workflows.sql  # ETL transformation patterns
-│   └── 06_data_quality.sql   # Data quality framework
-├── workflows/                # DataWorks workflow definitions
-│   └── daily_etl_workflow.json # Complete ETL orchestration
-├── udf/                      # User Defined Functions
-│   ├── java/StringUtils.java # String processing utilities
-│   └── python/text_analytics.py # NLP and text analysis
-├── scripts/                  # Utility scripts
-│   └── data_generator.py     # Generate large-scale test data
-├── docs/                     # Documentation and guides
-│   ├── getting_started.md    # Comprehensive setup guide
-│   └── troubleshooting.md    # Common issues and solutions
-├── tests/                    # Test scripts
-│   └── test_queries.sql      # Comprehensive validation tests
-├── TODO.md                   # Project completion status
-└── README.md                 # This file
-```
-
-## 🚀 Quick Start (15 minutes)
-
-### 1. Prerequisites
-- Alibaba Cloud account with DataWorks and MaxCompute enabled
-- Basic SQL knowledge
-- Access to DataWorks console
-
-### 2. Setup Your Environment
-```bash
-# Clone the repository
-git clone https://github.com/rcdelacruz/dataworks-maxcompute-practice.git
-cd dataworks-maxcompute-practice
-
-# Follow the detailed setup guide
-open docs/getting_started.md
-```
-
-### 3. Create Tables and Load Data
-1. Run table creation scripts: `sql/01_create_tables.sql`
-2. Load sample data: `sql/02_load_data.sql`
-3. Verify installation: `tests/test_queries.sql`
-
-### 4. Start Learning
-Begin with Module 1 and progress through the learning path outlined in the getting started guide.
-
-## 📊 Sample Datasets
-
-### E-commerce Data (Complete Transactional System)
-- **customers.csv**: Customer master data with demographics
-- **products.csv**: Product catalog with pricing and categories
-- **orders.csv**: Order transactions with status tracking
-- **order_items.csv**: Detailed line items with quantities and pricing
-- **suppliers.csv**: Supplier information and ratings
-
-### Web Analytics Data (Complete Digital Analytics)
-- **web_sessions.csv**: User session data with device and traffic source info
-- **page_views.csv**: Page view events with timing and referrer data
-- **user_events.csv**: Custom interaction events (clicks, scrolls, forms)
-
-### Data Relationships
-All datasets are interconnected with proper foreign key relationships, enabling realistic join operations and complex analytics scenarios.
-
-## 🎓 Learning Modules
-
-### Module 1: Basic Operations (1-2 hours)
-**Objective**: Master fundamental MaxCompute SQL operations
-- Table creation and schema design
-- Data loading techniques and best practices
-- Basic queries, filtering, and aggregations
-- **Files**: `sql/01_create_tables.sql`, `sql/02_load_data.sql`, `sql/03_basic_queries.sql`
-
-### Module 2: ETL Workflows (2-3 hours)
-**Objective**: Build production-grade ETL pipelines
-- Multi-table joins and complex analytics
-- Data quality checks and cleansing
-- Incremental processing patterns
-- **Files**: `sql/04_joins_analytics.sql`, `sql/05_etl_workflows.sql`, `sql/06_data_quality.sql`
-
-### Module 3: Advanced Features (3-4 hours)
-**Objective**: Implement custom functions and advanced analytics
-- User Defined Functions (Java and Python)
-- Text processing and analytics
-- Performance optimization techniques
-- **Files**: `udf/java/StringUtils.java`, `udf/python/text_analytics.py`
-
-### Module 4: DataWorks Integration (2-3 hours)
-**Objective**: Master workflow orchestration and automation
-- Workflow scheduling and dependencies
-- Error handling and monitoring
-- Production deployment patterns
-- **Files**: `workflows/daily_etl_workflow.json`
-
-## 🛠️ Advanced Features
-
-### Custom UDF Examples
-- **Java StringUtils**: Comprehensive string manipulation and validation functions
-- **Python Text Analytics**: NLP processing including sentiment analysis and keyword extraction
-
-### ETL Framework
-- **Data Quality Monitoring**: Automated quality checks with alerting
-- **Incremental Processing**: Change data capture and delta processing patterns
-- **Performance Optimization**: Query optimization and cost management
-
-### Workflow Orchestration
-- **Dependency Management**: Complex workflow dependencies with error handling
-- **Monitoring & Alerting**: SLA monitoring with automated notifications
-- **Resource Management**: Memory and CPU optimization configurations
-
-## 🧪 Data Generation
-
-Generate large-scale datasets for performance testing:
-
-```bash
-# Generate 10,000 customers
-python scripts/data_generator.py --table customers --records 10000
-
-# Generate all tables with 5,000 records each
-python scripts/data_generator.py --table all --records 5000
-
-# Generate 100,000 web sessions for specific date range
-python scripts/data_generator.py --table web_sessions --records 100000
-```
-
-## 📚 Documentation
-
-### Essential Guides
-- **[Getting Started Guide](docs/getting_started.md)**: Comprehensive setup and learning path
-- **[Troubleshooting Guide](docs/troubleshooting.md)**: Common issues and solutions
-- **[Project Status](TODO.md)**: Current completion status and future enhancements
-
-### SQL Reference
-All SQL scripts include detailed comments explaining:
-- MaxCompute-specific syntax and functions
-- Best practices and optimization techniques
-- Real-world use case scenarios
-- Expected outputs and results
-
-## 🔧 Testing and Validation
-
-### Comprehensive Test Suite
-Run the complete validation suite to verify your setup:
-
-```sql
--- Execute all tests
-@sql/tests/test_queries.sql
-
--- Verify data quality
-@sql/06_data_quality.sql
-```
-
-### Test Coverage
-- Data integrity and referential consistency
-- Query performance and optimization
-- UDF functionality and error handling
-- Workflow execution and dependency management
-
-## 🌟 Key Features
-
-### Production-Ready Components
-- ✅ **Realistic Data Models**: Based on real e-commerce and analytics patterns
-- ✅ **Complete ETL Framework**: Industry-standard data processing patterns
-- ✅ **Quality Assurance**: Comprehensive data quality and testing framework
-- ✅ **Performance Optimized**: Query optimization and cost management examples
-- ✅ **Scalable Architecture**: Designed for both learning and production use
-
-### Learning-Focused Design
-- ✅ **Progressive Complexity**: From basic to advanced concepts
-- ✅ **Hands-on Examples**: Practical exercises with real business scenarios
-- ✅ **Best Practices**: Industry-standard patterns and techniques
-- ✅ **Comprehensive Documentation**: Detailed guides and troubleshooting
-
-## 🚀 Future Enhancements (Optional)
-
-While the core project is 100% complete, these optional enhancements could extend its capabilities:
-
-### Advanced SQL Examples
-- Performance optimization patterns
-- Machine learning feature preparation
-- Real-time processing examples
-- Security and permissions
-
-### Additional Workflows
-- Customer segmentation automation
-- ML model training pipelines
-- Real-time analytics processing
-
-### Extended Utilities
-- Performance monitoring dashboard
-- Cost optimization analyzer
-- Automated backup solutions
-
-See [TODO.md](TODO.md) for the complete list of optional enhancements.
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### Areas for Contribution
-- Additional sample datasets
-- More UDF examples
-- Advanced workflow patterns
-- Documentation improvements
-- Performance optimization examples
-
-### Contribution Process
-1. Fork the repository
-2. Create a feature branch
-3. Add your improvements
-4. Test thoroughly
-5. Submit a pull request
-
-## 📞 Support and Community
-
-### Getting Help
-- **Documentation**: Check the comprehensive guides in `/docs`
-- **Issues**: Open GitHub issues for questions or problems
-- **Discussions**: Use GitHub Discussions for general questions
-
-### Professional Support
-- Alibaba Cloud Technical Support
-- DataWorks Consulting Services
-- MaxCompute Training Programs
-
-## 📈 Success Metrics
-
-After completing this project, you'll be able to:
-- ✅ Design and implement scalable data warehouse solutions
-- ✅ Build production-grade ETL pipelines with monitoring
-- ✅ Optimize query performance and manage costs effectively
-- ✅ Develop custom functions for specialized data processing
-- ✅ Orchestrate complex workflows with proper error handling
-- ✅ Implement comprehensive data quality frameworks
-
-## 🏆 Project Achievements
-
-### Completion Status: 100% Core Complete ✅
-- **8/8 Core datasets** implemented with realistic data
-- **6/6 Priority SQL scripts** covering basic to advanced operations
-- **2/2 Priority UDF examples** for Java and Python
-- **1/1 Priority workflow** with complete orchestration
-- **Professional documentation** with comprehensive guides
-- **Data generation tools** for scaling test environments
-
-### Ready for Production Use
-This project is production-ready for learning, training, and development environments, providing everything needed for comprehensive DataWorks & MaxCompute education.
+**原始项目**：[rcdelacruz/dataworks-maxcompute-practice](https://github.com/rcdelacruz/dataworks-maxcompute-practice)
 
 ---
 
-## 📝 License
+## 目录结构
 
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- Alibaba Cloud Documentation Team for technical references
-- DataWorks and MaxCompute engineering teams for platform capabilities
-- Open source community for best practices and patterns
+```
+maxcompute2lakehouse-ecommerce/
+├── 01_source/                        # 原始 MaxCompute 代码（原样保留）
+│   ├── sql/                          # MaxCompute SQL（6 个脚本）
+│   ├── workflows/daily_etl_workflow.json  # DataWorks 任务编排
+│   ├── udf/                          # 原始 UDF（Java + Python）
+│   ├── tests/test_queries.sql        # 原始验证测试
+│   └── README.md                     # 原始项目说明
+├── 02_migration/                     # 迁移说明
+│   ├── 01_sql_syntax_diff.md         # MaxCompute vs Lakehouse 语法对照
+│   └── 02_dataworks_to_studio.md     # DataWorks 任务 → Studio 任务映射
+├── 03_lakehouse/                     # 迁移后代码
+│   ├── sql/                          # Lakehouse SQL（对应 01_source/sql/）
+│   │   ├── 01_create_tables.sql      # ODS 层建表
+│   │   ├── 02_load_data.sql          # COPY INTO FROM VOLUME
+│   │   ├── 03_basic_queries.sql      # 基础查询
+│   │   ├── 04_joins_analytics.sql    # JOIN + 窗口函数
+│   │   ├── 03_ods_transform.sql      # DWD 层建表
+│   │   ├── 04_dwd_transform.sql      # DWD 层 ETL
+│   │   ├── 05_ads_transform.sql      # ADS 层 ETL
+│   │   └── 06_data_quality.sql       # 数据质量框架
+│   ├── tasks/task_list.txt           # Studio 任务列表（对应 DataWorks workflow）
+│   ├── udf/                          # External Function 代码
+│   │   ├── text_analytics.py         # Python UDF（适配 cz.udf）
+│   │   ├── StringUtils.java          # Java UDF（适配 com.clickzetta.udf）
+│   │   └── register_functions.sql    # CREATE EXTERNAL FUNCTION 注册 SQL
+│   ├── tests/test_queries.sql        # 迁移后验证测试（16 个）
+│   ├── includes/configuration.py     # Schema / Volume 路径常量
+│   ├── setup.py                      # 一键初始化
+│   └── e2e.py                        # 端到端验证
+├── data/                             # 8 个 CSV 样本文件
+├── .env.example                      # 连接配置模板
+└── .gitignore
+```
 
 ---
 
-**Start your DataWorks & MaxCompute journey today!** 🚀
+## 快速开始
 
-Follow the [Getting Started Guide](docs/getting_started.md) to begin learning with hands-on, realistic scenarios.
+### 1. 配置连接
+
+```bash
+cp .env.example .env
+# 填写 CLICKZETTA_SERVICE / INSTANCE / WORKSPACE / USERNAME / PASSWORD
+```
+
+### 2. 初始化环境
+
+```bash
+pip install clickzetta-zettapark python-dotenv
+python 03_lakehouse/setup.py
+```
+
+`setup.py` 会自动完成：
+- 创建 cz-cli profile（`ecommerce_dev`）
+- 创建 Schema（ecommerce / ecommerce_dwd / ecommerce_ads）
+- 创建 Volume 并上传 8 个 CSV 文件
+- 建表（ODS 层 8 张表）
+- 加载数据（COPY INTO）
+
+### 3. 端到端验证
+
+```bash
+# 增量运行（保留已有数据）
+python 03_lakehouse/e2e.py
+
+# 全量重跑（清空后重建）
+python 03_lakehouse/e2e.py --reset
+```
+
+验证通过后输出：
+
+```
+ecommerce（ODS）:  8 张表，共 149 行
+ecommerce_dwd:     daily_sales_summary 4 行 / customer_segments 10 行 / product_performance 10 行
+ecommerce_ads:     web_analytics_summary 1 行 / data_quality_metrics 3 行
+Studio 任务:       5 个任务全部触发成功
+```
+
+---
+
+## 迁移要点
+
+### SQL 语法（6 处改动）
+
+| MaxCompute | Lakehouse | 说明 |
+|---|---|---|
+| `LIFECYCLE 365` | 删除 | Lakehouse 无此概念 |
+| `DATETIME` | `STRING`（ODS）/ `TIMESTAMP`（DWD） | COPY INTO 不支持隐式转换 |
+| `LOAD DATA INPATH 'oss://...'` | `COPY INTO ... FROM VOLUME ... USING CSV` | 语法结构不同 |
+| `${bizdate}` | Python f-string 动态拼接 | Lakehouse SQL 不支持参数变量 |
+| `GETDATE()` | `CURRENT_TIMESTAMP()` | — |
+| `RLIKE` / `CAST AS STRING` | `REGEXP` / `CAST AS VARCHAR` | — |
+
+### DataWorks → Studio 任务
+
+```bash
+# 创建任务（必须带 --profile 保证上下文一致）
+cz-cli task create <name> --type SQL --folder ecommerce_etl --profile ecommerce_dev
+
+# 写入内容
+cz-cli task save-content <name> --file <sql_file> --profile ecommerce_dev
+
+# 配置依赖（--dep-tasks 传 JSON 数组）
+cz-cli task save-config <name> \
+  --deps replace \
+  --dep-tasks '[{"taskId":10353489,"taskName":"data_quality_check"}]' \
+  --profile ecommerce_dev
+```
+
+### UDF
+
+Python/Java UDF 代码逻辑零改动，部署方式从"MaxCompute 引擎内执行"改为"云函数服务（阿里云 FC / 腾讯云 SCF）"。注册 SQL 见 `03_lakehouse/udf/register_functions.sql`。
+
+---
+
+## 踩坑记录
+
+详见迁移文档，主要 4 个坑：
+
+1. `COPY INTO FILE_FORMAT=(...)` 语法报错 → 改用 `USING CSV OPTIONS(...)`
+2. ODS 层日期列用 `TIMESTAMP` 导致 COPY INTO 隐式转换失败 → 改用 `STRING`
+3. `user_events.csv` 第 30 行 `event_data` 含逗号导致列数溢出 → Python 修复源数据
+4. `cz-cli task save-config --deps` 不接受任务名 → 用 `--dep-tasks '[{"taskId":...}]'`
