@@ -7,8 +7,8 @@
 | 表生命周期 | `LIFECYCLE 365` | 不支持，直接删除 |
 | 日期时间类型 | `DATETIME` | `TIMESTAMP` |
 | 当前时间函数 | `GETDATE()` | `CURRENT_TIMESTAMP()` |
-| 分区写入 | `INSERT OVERWRITE TABLE t PARTITION (ds='${bizdate}')` | `INSERT OVERWRITE TABLE t PARTITION (ds='20240115')` |
-| 参数变量 | `${bizdate}` | 不支持，用字面量或在 Python 中拼接 |
+| 分区写入 | `INSERT OVERWRITE TABLE t PARTITION (ds='${bizdate}')` | Studio 任务 SQL 中可保留 `${bizdate}`；Python 直接执行时用 f-string |
+| 参数变量 | `${bizdate}` | Studio 任务 SQL 支持（调度运行时替换）；Python/cz-cli 直接执行时用 f-string |
 | 数据加载 | `LOAD DATA INPATH 'oss://...'` | `COPY INTO ... FROM VOLUME ...` |
 | 表注释 | `COMMENT '...'` | 支持（可选） |
 | 分区语法 | `PARTITIONED BY (ds STRING)` | 相同 |
@@ -46,10 +46,12 @@ order_date TIMESTAMP
 
 ### 3. ${bizdate} 参数变量
 
-MaxCompute/DataWorks 支持 `${bizdate}` 运行时参数，Lakehouse SQL 不支持。迁移方式：
+**Studio 任务 SQL** 中可以直接使用 `${bizdate}`，调度运行时由系统替换，与 DataWorks 行为一致。
 
-- **静态 SQL**：用字面量替换，如 `'20240115'`
-- **动态执行**：在 Python 中用 f-string 拼接后通过 `session.sql()` 执行
+**Python/cz-cli 直接执行**时 `${bizdate}` 不会被替换，需要用 f-string 动态拼接：
+
+- **Studio 任务 SQL**：保留 `${bizdate}` 不变
+- **Python 直接执行**：用 f-string 传入字面量日期
 
 ```python
 # Python 中动态传入日期

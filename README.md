@@ -23,14 +23,14 @@ maxcompute2lakehouse-ecommerce/
 │   └── 02_dataworks_to_studio.md     # DataWorks 任务 → Studio 任务映射
 ├── 03_lakehouse/                     # 迁移后代码
 │   ├── sql/                          # Lakehouse SQL（对应 01_source/sql/）
-│   │   ├── 01_create_tables.sql      # ODS 层建表
-│   │   ├── 02_load_data.sql          # COPY INTO FROM VOLUME
-│   │   ├── 03_basic_queries.sql      # 基础查询
-│   │   ├── 04_joins_analytics.sql    # JOIN + 窗口函数
-│   │   ├── 03_dwd_create_tables.sql  # DWD 层建表
+│   │   ├── 01_create_tables.sql      # ODS 层建表（8 张原始表）
+│   │   ├── 02_load_data.sql          # COPY INTO FROM VOLUME（加载 CSV）
+│   │   ├── 03_dwd_create_tables.sql  # DWD 层建表（3 张汇总表）
 │   │   ├── 04_dwd_transform.sql      # DWD 层 ETL（数据填充）
-│   │   ├── 05_ads_transform.sql      # ADS 层 ETL
-│   │   └── 06_data_quality.sql       # 数据质量框架
+│   │   ├── 05_ads_transform.sql      # ADS 层 ETL（Web 分析/变更检测/DQ 监控）
+│   │   ├── 06_data_quality.sql       # 数据质量框架（规则/评估/Profiling）
+│   │   ├── 03_basic_queries.sql      # 基础查询示例（对应 01_source/sql/03）
+│   │   └── 04_joins_analytics.sql    # JOIN + 窗口函数示例（对应 01_source/sql/04）
 │   ├── tasks/task_list.txt           # Studio 任务列表（对应 DataWorks workflow）
 │   ├── udf/                          # External Function 代码
 │   │   ├── text_analytics.py         # Python UDF（适配 cz.udf）

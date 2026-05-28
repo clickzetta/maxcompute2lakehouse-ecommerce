@@ -27,7 +27,7 @@
 | DataWorks 节点 | Studio 任务名 | 对应 SQL 文件 |
 |---|---|---|
 | data_quality_check | `data_quality_check` | `03_lakehouse/sql/06_data_quality.sql` |
-| customer_segmentation | `customer_segmentation` | `03_lakehouse/sql/03_dwd_create_tables.sql` |
+| customer_segmentation | `customer_segmentation` | `03_lakehouse/sql/04_dwd_transform.sql` |
 | product_performance | `product_performance_etl` | `03_lakehouse/sql/04_dwd_transform.sql` |
 | web_analytics_summary | `web_analytics_etl` | `03_lakehouse/sql/05_ads_transform.sql` |
 | daily_sales_summary | `daily_sales_summary` | `03_lakehouse/sql/04_dwd_transform.sql` |
