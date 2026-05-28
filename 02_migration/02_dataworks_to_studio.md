@@ -16,11 +16,21 @@
 
 原始 workflow 包含以下节点（按依赖顺序）：
 
-1. `load_raw_data` — 加载原始 CSV 数据
-2. `transform_orders` — 订单数据清洗
-3. `transform_users` — 用户数据清洗
-4. `build_analytics` — 构建分析层聚合表
-5. `data_quality_check` — 数据质量校验
+1. `data_quality_check` — 数据质量校验（入口，无依赖）
+2. `customer_segmentation` — 客户分层分析（依赖 data_quality_check）
+3. `product_performance` — 商品表现分析（依赖 data_quality_check）
+4. `web_analytics_summary` — Web 流量分析（依赖 data_quality_check）
+5. `daily_sales_summary` — 每日销售汇总（依赖 customer_segmentation + product_performance）
+
+迁移后 Studio 任务名：
+
+| DataWorks 节点 | Studio 任务名 | 对应 SQL 文件 |
+|---|---|---|
+| data_quality_check | `data_quality_check` | `03_lakehouse/sql/06_data_quality.sql` |
+| customer_segmentation | `customer_segmentation` | `03_lakehouse/sql/03_dwd_create_tables.sql` |
+| product_performance | `product_performance_etl` | `03_lakehouse/sql/04_dwd_transform.sql` |
+| web_analytics_summary | `web_analytics_etl` | `03_lakehouse/sql/05_ads_transform.sql` |
+| daily_sales_summary | `daily_sales_summary` | `03_lakehouse/sql/04_dwd_transform.sql` |
 
 ## 迁移步骤
 
@@ -46,53 +56,86 @@ cz-cli task create-folder ecommerce_etl --profile ecommerce_dev
 ### 3. 创建各任务节点
 
 ```bash
-cz-cli task create load_raw_data      --profile ecommerce_dev
-cz-cli task create transform_orders   --profile ecommerce_dev
-cz-cli task create transform_users    --profile ecommerce_dev
-cz-cli task create build_analytics    --profile ecommerce_dev
-cz-cli task create data_quality_check --profile ecommerce_dev
+cz-cli task create data_quality_check    --type SQL --folder ecommerce_etl --profile ecommerce_dev
+cz-cli task create customer_segmentation --type SQL --folder ecommerce_etl --profile ecommerce_dev
+cz-cli task create product_performance_etl --type SQL --folder ecommerce_etl --profile ecommerce_dev
+cz-cli task create web_analytics_etl    --type SQL --folder ecommerce_etl --profile ecommerce_dev
+cz-cli task create daily_sales_summary  --type SQL --folder ecommerce_etl --profile ecommerce_dev
 ```
 
 ### 4. 写入 SQL 内容
 
 ```bash
-cz-cli task save-content transform_orders \
-  --file 03_lakehouse/sql/04_dwd_transform.sql \
-  --profile ecommerce_dev
+cz-cli task save-content data_quality_check \
+  --file 03_lakehouse/sql/06_data_quality.sql --profile ecommerce_dev
+
+cz-cli task save-content customer_segmentation \
+  --file 03_lakehouse/sql/03_dwd_create_tables.sql --profile ecommerce_dev
+
+cz-cli task save-content product_performance_etl \
+  --file 03_lakehouse/sql/04_dwd_transform.sql --profile ecommerce_dev
+
+cz-cli task save-content web_analytics_etl \
+  --file 03_lakehouse/sql/05_ads_transform.sql --profile ecommerce_dev
+
+cz-cli task save-content daily_sales_summary \
+  --file 03_lakehouse/sql/04_dwd_transform.sql --profile ecommerce_dev
 ```
 
 ### 5. 配置任务依赖
 
+先用 `cz-cli task list --profile ecommerce_dev` 获取各任务的 task_id，再配置依赖：
+
 ```bash
-# transform_orders 依赖 load_raw_data
-cz-cli task save-config transform_orders \
-  --deps load_raw_data \
+# 获取 data_quality_check 的 task_id
+cz-cli task list --profile ecommerce_dev
+
+# customer_segmentation 依赖 data_quality_check（替换 <DQC_ID> 为实际 task_id）
+cz-cli task save-config customer_segmentation \
+  --deps replace \
+  --dep-tasks '[{"taskId":<DQC_ID>,"taskName":"data_quality_check"}]' \
+  --profile ecommerce_dev
+
+# product_performance_etl 依赖 data_quality_check
+cz-cli task save-config product_performance_etl \
+  --deps replace \
+  --dep-tasks '[{"taskId":<DQC_ID>,"taskName":"data_quality_check"}]' \
+  --profile ecommerce_dev
+
+# web_analytics_etl 依赖 data_quality_check
+cz-cli task save-config web_analytics_etl \
+  --deps replace \
+  --dep-tasks '[{"taskId":<DQC_ID>,"taskName":"data_quality_check"}]' \
+  --profile ecommerce_dev
+
+# daily_sales_summary 依赖 customer_segmentation + product_performance_etl
+cz-cli task save-config daily_sales_summary \
+  --deps replace \
+  --dep-tasks '[{"taskId":<CS_ID>,"taskName":"customer_segmentation"},{"taskId":<PP_ID>,"taskName":"product_performance_etl"}]' \
   --profile ecommerce_dev
 ```
 
-### 6. 配置调度（对应 DataWorks 的 Cron 调度）
+### 6. 配置调度（每天 02:00 触发入口任务）
 
 ```bash
-# 每天凌晨 2 点运行
-cz-cli task save-cron load_raw_data \
-  --cron "0 2 * * *" \
-  --profile ecommerce_dev
+cz-cli task save-cron data_quality_check \
+  --cron "0 2 * * *" --profile ecommerce_dev
 ```
 
 ### 7. 发布上线
 
 ```bash
-cz-cli task deploy load_raw_data      --profile ecommerce_dev
-cz-cli task deploy transform_orders   --profile ecommerce_dev
-cz-cli task deploy transform_users    --profile ecommerce_dev
-cz-cli task deploy build_analytics    --profile ecommerce_dev
-cz-cli task deploy data_quality_check --profile ecommerce_dev
+cz-cli task deploy data_quality_check    --profile ecommerce_dev
+cz-cli task deploy customer_segmentation --profile ecommerce_dev
+cz-cli task deploy product_performance_etl --profile ecommerce_dev
+cz-cli task deploy web_analytics_etl    --profile ecommerce_dev
+cz-cli task deploy daily_sales_summary  --profile ecommerce_dev
 ```
 
 ### 8. 手动触发验证
 
 ```bash
-cz-cli task execute load_raw_data --profile ecommerce_dev
+cz-cli task execute data_quality_check --profile ecommerce_dev
 ```
 
 ## 注意事项

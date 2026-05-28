@@ -27,8 +27,8 @@ maxcompute2lakehouse-ecommerce/
 │   │   ├── 02_load_data.sql          # COPY INTO FROM VOLUME
 │   │   ├── 03_basic_queries.sql      # 基础查询
 │   │   ├── 04_joins_analytics.sql    # JOIN + 窗口函数
-│   │   ├── 03_ods_transform.sql      # DWD 层建表
-│   │   ├── 04_dwd_transform.sql      # DWD 层 ETL
+│   │   ├── 03_dwd_create_tables.sql  # DWD 层建表
+│   │   ├── 04_dwd_transform.sql      # DWD 层 ETL（数据填充）
 │   │   ├── 05_ads_transform.sql      # ADS 层 ETL
 │   │   └── 06_data_quality.sql       # 数据质量框架
 │   ├── tasks/task_list.txt           # Studio 任务列表（对应 DataWorks workflow）
@@ -80,13 +80,22 @@ python 03_lakehouse/e2e.py
 python 03_lakehouse/e2e.py --reset
 ```
 
+`e2e.py` 执行顺序：DWD 层建表 → DWD 数据填充 → ADS 层转换 → 数据质量框架 → 行数汇总 → Studio 任务触发
+
 验证通过后输出：
 
 ```
-ecommerce（ODS）:  8 张表，共 149 行
-ecommerce_dwd:     daily_sales_summary 4 行 / customer_segments 10 行 / product_performance 10 行
-ecommerce_ads:     web_analytics_summary 1 行 / data_quality_metrics 3 行
-Studio 任务:       5 个任务全部触发成功
+ecommerce（ODS）:
+  customers / products / orders / order_items / web_sessions / page_views / user_events / suppliers
+
+ecommerce_dwd:
+  daily_sales_summary 4 行 / customer_segments 10 行 / product_performance 10 行
+
+ecommerce_ads:
+  web_analytics_summary 1 行 / customer_changes 0 行 / data_quality_metrics 3 行
+  dq_rules 6 行 / dq_assessment 6 行 / data_profile 3 行
+
+Studio 任务:  5 个任务全部触发成功
 ```
 
 ---

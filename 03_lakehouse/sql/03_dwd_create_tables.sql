@@ -1,8 +1,6 @@
--- Lakehouse DWD 层转换
--- 对应 01_source/sql/05_etl_workflows.sql 中的 ETL 逻辑
--- 主要迁移点：
---   ${bizdate} → Python 层传入的字面量日期
---   GETDATE()  → CURRENT_TIMESTAMP()
+-- Lakehouse DWD 层建表（CREATE TABLE 只建结构，不插入数据）
+-- 数据填充见 04_dwd_transform.sql
+-- 对应 01_source/sql/05_etl_workflows.sql 中的目标表定义
 --   LIFECYCLE  → 删除
 --   DATETIME   → TIMESTAMP
 

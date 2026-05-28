@@ -65,19 +65,22 @@ def step_reset(session):
     for schema in [ods_schema, dwd_schema, ads_schema]:
         rows = session.sql(f"SHOW TABLES IN {schema}").collect()
         for row in rows:
-            tname = row[1] if len(row) > 1 else row[0]
-            session.sql(f"DROP TABLE IF EXISTS {schema}.{tname}").collect()
-            print(f"  DROP {schema}.{tname}")
+            tname = row.as_dict().get("table_name")
+            if tname:
+                session.sql(f"DROP TABLE IF EXISTS {schema}.{tname}").collect()
+                print(f"  DROP {schema}.{tname}")
 
 
 def step_transform(session):
     sql_dir = LAKEHOUSE / "sql"
-    print("\n[1/3] ODS 转换")
-    run_sql_file(session, sql_dir / "03_ods_transform.sql")
-    print("\n[2/3] DWD 转换")
+    print("\n[1/4] DWD 层建表")
+    run_sql_file(session, sql_dir / "03_dwd_create_tables.sql")
+    print("\n[2/4] DWD 层数据填充")
     run_sql_file(session, sql_dir / "04_dwd_transform.sql")
-    print("\n[3/3] ADS 转换")
+    print("\n[3/4] ADS 层转换")
     run_sql_file(session, sql_dir / "05_ads_transform.sql")
+    print("\n[4/4] 数据质量框架")
+    run_sql_file(session, sql_dir / "06_data_quality.sql")
 
 
 def step_summary(session):
@@ -86,7 +89,8 @@ def step_summary(session):
         ods_schema: ["customers", "products", "orders", "order_items",
                      "web_sessions", "page_views", "user_events", "suppliers"],
         dwd_schema: ["daily_sales_summary", "customer_segments", "product_performance"],
-        ads_schema: ["web_analytics_summary", "customer_changes", "data_quality_metrics"],
+        ads_schema: ["web_analytics_summary", "customer_changes", "data_quality_metrics",
+                     "dq_rules", "dq_assessment", "data_profile"],
     }
     for schema, tables in layers.items():
         if not tables:
