@@ -85,8 +85,8 @@ def step_summary(session):
     layers = {
         ods_schema: ["customers", "products", "orders", "order_items",
                      "web_sessions", "page_views", "user_events", "suppliers"],
-        dwd_schema: [],   # 迁移后补充
-        ads_schema: [],   # 迁移后补充
+        dwd_schema: ["daily_sales_summary", "customer_segments", "product_performance"],
+        ads_schema: [],   # ADS 层待补充
     }
     for schema, tables in layers.items():
         if not tables:
@@ -110,7 +110,8 @@ def step_tasks():
         print("  提示：运行 cz-cli task list --profile ecommerce_dev 查看已创建的任务")
         return
 
-    task_names = [l.strip() for l in task_list_file.read_text().splitlines() if l.strip()]
+    task_names = [l.strip() for l in task_list_file.read_text().splitlines()
+                  if l.strip() and not l.strip().startswith('#')]
     for task in task_names:
         print(f"\n  执行任务: {task}")
         result = subprocess.run(
