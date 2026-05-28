@@ -168,7 +168,7 @@ def main():
         drop_sql_direct(f"DROP FUNCTION IF EXISTS {fn}")
 
     print(f"\n[API Connection] 删除 {API_CONNECTION}（如已创建）")
-    drop_sql_direct(f"DROP API CONNECTION IF EXISTS {API_CONNECTION}")
+    drop_sql_direct(f"DROP CONNECTION IF EXISTS {API_CONNECTION}")
 
     # ── cz-cli profile ────────────────────────────────────────────────────────
     print(f"\n[cz-cli profile] 删除 {PROFILE}")
