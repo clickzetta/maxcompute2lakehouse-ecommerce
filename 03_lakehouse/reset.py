@@ -3,6 +3,8 @@
 reset.py — 清理所有迁移创建的 Lakehouse 对象
 
 清理范围：
+  - Studio 任务（ecommerce_etl 文件夹下的 5 个任务）
+  - Studio 任务文件夹：ecommerce_etl
   - ecommerce schema 下所有表
   - ecommerce_dwd schema 下所有表
   - ecommerce_ads schema 下所有表
@@ -16,6 +18,7 @@ reset.py — 清理所有迁移创建的 Lakehouse 对象
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -31,6 +34,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 from includes.configuration import SCHEMA_NAME, VOLUME_NAME, ods_schema, dwd_schema, ads_schema
 
 DRY_RUN = "--confirm" not in sys.argv
+PROFILE = os.environ.get("CZ_PROFILE", "ecommerce_dev")
+TASK_FOLDER = "ecommerce_etl"
+
+TASKS = [
+    "data_quality_check",
+    "customer_segmentation",
+    "product_performance_etl",
+    "web_analytics_etl",
+    "daily_sales_summary",
+]
 
 
 def make_session():
@@ -45,8 +58,26 @@ def make_session():
     }).create()
 
 
-def drop(session, obj_type, schema, name):
-    stmt = f"DROP {obj_type} IF EXISTS {schema}.{name}"
+def run_cz(args, label):
+    cmd = ["cz-cli"] + args + ["--profile", PROFILE]
+    if DRY_RUN:
+        print(f"  [DRY RUN] cz-cli {' '.join(args)}")
+        return True
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode == 0:
+        print(f"  OK  {label}")
+        return True
+    else:
+        # 任务不存在时不报错，继续
+        err = result.stderr.strip() or result.stdout.strip()
+        if "not found" in err.lower() or "does not exist" in err.lower():
+            print(f"  SKIP {label}（不存在）")
+            return True
+        print(f"  WARN {label}: {err[:120]}")
+        return False
+
+
+def drop_sql(session, stmt):
     if DRY_RUN:
         print(f"  [DRY RUN] {stmt}")
     else:
@@ -55,19 +86,26 @@ def drop(session, obj_type, schema, name):
 
 
 def main():
+    mode = "DRY RUN（预览模式，不实际删除）" if DRY_RUN else "清理所有迁移对象"
+    print("=" * 60)
+    print(f"reset.py — {mode}")
     if DRY_RUN:
-        print("=" * 60)
-        print("reset.py — DRY RUN（预览模式，不实际删除）")
         print("加 --confirm 参数执行实际删除")
-        print("=" * 60)
-    else:
-        print("=" * 60)
-        print("reset.py — 清理所有迁移对象")
-        print("=" * 60)
+    print("=" * 60)
 
+    # ── Studio 任务 ──────────────────────────────────────────
+    print(f"\n[Studio 任务] undeploy + delete（folder: {TASK_FOLDER}）")
+    for task in TASKS:
+        # 已发布的任务必须先 undeploy 才能 delete
+        run_cz(["task", "undeploy", task, "-y"], f"undeploy {task}")
+        run_cz(["task", "delete", task, "-y"], f"delete {task}")
+
+    print(f"\n[Studio 文件夹] delete-folder {TASK_FOLDER}")
+    run_cz(["task", "delete-folder", TASK_FOLDER, "-y"], f"delete-folder {TASK_FOLDER}")
+
+    # ── Lakehouse 对象 ────────────────────────────────────────
     session = make_session()
     try:
-        # 删除各 schema 下的所有表
         for schema in [ods_schema, dwd_schema, ads_schema]:
             rows = session.sql(f"SHOW TABLES IN {schema}").collect()
             if rows:
@@ -75,27 +113,16 @@ def main():
                 for row in rows:
                     tname = row.as_dict().get("table_name")
                     if tname:
-                        drop(session, "TABLE", schema, tname)
+                        drop_sql(session, f"DROP TABLE IF EXISTS {schema}.{tname}")
             else:
                 print(f"\n[{schema}] 无表，跳过")
 
-        # 删除 Volume
         print(f"\n[Volume] 删除 {SCHEMA_NAME}.{VOLUME_NAME}")
-        stmt = f"DROP VOLUME IF EXISTS {SCHEMA_NAME}.{VOLUME_NAME}"
-        if DRY_RUN:
-            print(f"  [DRY RUN] {stmt}")
-        else:
-            session.sql(stmt).collect()
-            print(f"  {stmt}")
+        drop_sql(session, f"DROP VOLUME IF EXISTS {SCHEMA_NAME}.{VOLUME_NAME}")
 
-        # 删除 Schema（顺序：先子 schema，再主 schema）
+        print(f"\n[Schema] 删除 {ads_schema} / {dwd_schema} / {ods_schema}")
         for schema in [ads_schema, dwd_schema, ods_schema]:
-            stmt = f"DROP SCHEMA IF EXISTS {schema}"
-            if DRY_RUN:
-                print(f"  [DRY RUN] {stmt}")
-            else:
-                session.sql(stmt).collect()
-                print(f"  {stmt}")
+            drop_sql(session, f"DROP SCHEMA IF EXISTS {schema}")
 
     finally:
         session.close()
