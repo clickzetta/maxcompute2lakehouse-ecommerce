@@ -49,17 +49,29 @@ maxcompute2lakehouse-ecommerce/
 
 ## 快速开始
 
+### 0. 安装 cz-cli
+
+cz-cli 是独立的命令行工具，通过 pip 安装：
+
+```bash
+pip install cz-cli
+# 验证安装
+cz-cli --version
+```
+
 ### 1. 配置连接
 
 ```bash
 cp .env.example .env
 # 填写 CLICKZETTA_SERVICE / INSTANCE / WORKSPACE / USERNAME / PASSWORD
+# CLICKZETTA_SERVICE 格式示例：cn-shanghai-alicloud.api.clickzetta.com
+# CLICKZETTA_VCLUSTER 可在 Studio → 计算资源 中查看，常见值：default_ap
 ```
 
 ### 2. 初始化环境
 
 ```bash
-pip install clickzetta-zettapark python-dotenv
+pip install -r requirements.txt
 python 03_lakehouse/setup.py
 ```
 
@@ -69,6 +81,7 @@ python 03_lakehouse/setup.py
 - 创建 Volume 并上传 8 个 CSV 文件
 - 建表（ODS 层 8 张表）
 - 加载数据（COPY INTO）
+- 创建 Studio 任务（5 个，含依赖关系和 cron 调度）
 
 ### 3. 端到端验证
 

@@ -312,11 +312,11 @@ def step_tasks():
     task_list_file = LAKEHOUSE / "tasks" / "task_list.txt"
     if not task_list_file.exists():
         print("  [SKIP] tasks/task_list.txt 不存在，跳过任务验证")
-        print("  提示：运行 cz-cli task list --profile ecommerce_dev 查看已创建的任务")
-        return
+        return True
 
     task_names = [l.strip() for l in task_list_file.read_text().splitlines()
                   if l.strip() and not l.strip().startswith('#')]
+    passed = 0
     for task in task_names:
         result = subprocess.run(
             ["cz-cli", "task", "execute", task, "--profile", PROFILE],
@@ -324,8 +324,21 @@ def step_tasks():
         )
         if result.returncode == 0:
             print(f"  {task:<30} 触发成功")
+            passed += 1
         else:
-            print(f"  {task:<30} [WARN] {result.stderr.strip()}")
+            err = result.stderr.strip() or result.stdout.strip()
+            if "not found" in err.lower() or "does not exist" in err.lower():
+                print(f"  {task:<30} [FAIL] 任务不存在，请先运行 python 03_lakehouse/setup.py")
+            else:
+                print(f"  {task:<30} [FAIL] {err[:80]}")
+
+    total = len(task_names)
+    print(f"\n  任务触发：{passed}/{total}", end="")
+    if passed == total:
+        print("  ✓ 全部成功")
+    else:
+        print(f"  ✗ {total - passed} 个失败")
+    return passed == total
 
 
 def main():
@@ -354,7 +367,7 @@ def main():
     finally:
         session.close()
 
-    step_tasks()
+    all_passed = step_tasks() and all_passed
 
     print("\n" + "=" * 60)
     if all_passed:

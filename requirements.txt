@@ -1,0 +1,2 @@
+clickzetta-zettapark>=0.1.5
+python-dotenv>=1.0.0
