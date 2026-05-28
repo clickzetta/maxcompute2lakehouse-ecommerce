@@ -82,6 +82,16 @@ python 03_lakehouse/e2e.py --reset
 
 `e2e.py` 执行顺序：DWD 层建表 → DWD 数据填充 → ADS 层转换 → 数据质量框架 → 行数汇总 → Studio 任务触发
 
+### 4. 清理环境（可选）
+
+```bash
+# 预览将要删除的对象（dry run，不实际执行）
+python 03_lakehouse/reset.py
+
+# 实际删除所有表、Volume、Schema
+python 03_lakehouse/reset.py --confirm
+```
+
 验证通过后输出：
 
 ```

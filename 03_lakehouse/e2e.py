@@ -3,16 +3,21 @@
 e2e.py — 端到端全流程验证
 
 执行顺序：
-  1. 运行 ODS 层转换（03_lakehouse/sql/03_ods_transform.sql）
-  2. 运行 DWD 层转换（03_lakehouse/sql/04_dwd_transform.sql）
-  3. 运行 ADS 层转换（03_lakehouse/sql/05_ads_transform.sql）
-  4. 打印各层行数汇总
-  5. 通过 cz-cli task 触发 Studio 任务并验证状态
+  1. DWD 层建表（03_dwd_create_tables.sql）
+  2. DWD 层数据填充（04_dwd_transform.sql）
+  3. ADS 层转换（05_ads_transform.sql）
+  4. 数据质量框架（06_data_quality.sql）
+  5. 打印各层行数汇总
+  6. 通过 cz-cli task 触发 Studio 任务并验证状态
 
 用法：
   python 03_lakehouse/e2e.py               # 增量运行
   python 03_lakehouse/e2e.py --reset       # 先清空所有表，再全量跑
   python 03_lakehouse/e2e.py --skip-sql    # 跳过 SQL 转换，只跑 task 验证
+
+清理环境（删除所有表、Volume、Schema）：
+  python 03_lakehouse/reset.py             # 预览（dry run）
+  python 03_lakehouse/reset.py --confirm   # 实际执行
 """
 
 import os
