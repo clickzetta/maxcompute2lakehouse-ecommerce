@@ -86,7 +86,7 @@ def step_summary(session):
         ods_schema: ["customers", "products", "orders", "order_items",
                      "web_sessions", "page_views", "user_events", "suppliers"],
         dwd_schema: ["daily_sales_summary", "customer_segments", "product_performance"],
-        ads_schema: [],   # ADS 层待补充
+        ads_schema: ["web_analytics_summary", "customer_changes", "data_quality_metrics"],
     }
     for schema, tables in layers.items():
         if not tables:
@@ -135,6 +135,10 @@ def main():
     try:
         if DO_RESET:
             step_reset(session)
+            # RESET 后重新建表并加载数据
+            print("\n[RELOAD] 重新建表并加载数据")
+            run_sql_file(session, LAKEHOUSE / "sql" / "01_create_tables.sql")
+            run_sql_file(session, LAKEHOUSE / "sql" / "02_load_data.sql")
 
         if not SKIP_SQL:
             step_transform(session)

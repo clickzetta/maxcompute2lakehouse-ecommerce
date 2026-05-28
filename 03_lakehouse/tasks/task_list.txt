@@ -1,10 +1,5 @@
-# DataWorks 任务 → Studio 任务映射
-#
-# 每行一个 Studio 任务名，e2e.py 会按顺序触发并验证。
-# 用 cz-cli task list --profile ecommerce_dev 查看已创建的任务，
-# 将任务名填入此文件。
-#
-# 示例：
-# ecommerce_ods_load
-# ecommerce_dwd_transform
-# ecommerce_ads_report
+data_quality_check
+customer_segmentation
+product_performance_etl
+web_analytics_etl
+daily_sales_summary
