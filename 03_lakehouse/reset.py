@@ -10,6 +10,9 @@ reset.py — 清理所有迁移创建的 Lakehouse 对象
   - ecommerce_ads schema 下所有表
   - Volume：ecommerce.ecommerce_vol
   - Schema：ecommerce / ecommerce_dwd / ecommerce_ads
+  - External Functions（如已通过 register_functions.sql 注册）
+  - API Connection：ecommerce_fc_conn（如已创建）
+  - cz-cli profile：ecommerce_dev
 
 用法：
   python 03_lakehouse/reset.py           # 预览将要删除的对象（dry run）
@@ -33,9 +36,23 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent))
 from includes.configuration import SCHEMA_NAME, VOLUME_NAME, ods_schema, dwd_schema, ads_schema
 
-DRY_RUN = "--confirm" not in sys.argv
-PROFILE = os.environ.get("CZ_PROFILE", "ecommerce_dev")
+DRY_RUN     = "--confirm" not in sys.argv
+PROFILE     = os.environ.get("CZ_PROFILE", "ecommerce_dev")
 TASK_FOLDER = "ecommerce_etl"
+
+# External Functions 注册在 ecommerce schema 下（register_functions.sql）
+EXTERNAL_FUNCTIONS = [
+    "ecommerce.text_sentiment",
+    "ecommerce.text_keywords",
+    "ecommerce.text_similarity",
+    "ecommerce.text_word_count",
+    "ecommerce.text_language_detect",
+    "ecommerce.text_clean",
+    "ecommerce.string_utils",
+    "ecommerce.string_title_case",
+    "ecommerce.string_mask_email",
+]
+API_CONNECTION = "ecommerce_fc_conn"
 
 TASKS = [
     "data_quality_check",
@@ -85,6 +102,24 @@ def drop_sql(session, stmt):
         print(f"  {stmt}")
 
 
+def drop_sql_direct(stmt):
+    """不依赖已有 session，自建临时 session 执行单条 DROP。"""
+    if DRY_RUN:
+        print(f"  [DRY RUN] {stmt}")
+        return
+    try:
+        s = make_session()
+        s.sql(stmt).collect()
+        s.close()
+        print(f"  {stmt}")
+    except Exception as e:
+        err = str(e)
+        if "not found" in err.lower() or "does not exist" in err.lower():
+            print(f"  SKIP（不存在）: {stmt.split()[2]}")
+        else:
+            print(f"  WARN {stmt}: {err[:120]}")
+
+
 def main():
     mode = "DRY RUN（预览模式，不实际删除）" if DRY_RUN else "清理所有迁移对象"
     print("=" * 60)
@@ -126,6 +161,31 @@ def main():
 
     finally:
         session.close()
+
+    # ── External Functions（可选，如已通过 register_functions.sql 注册）──────
+    print(f"\n[External Functions] 删除（如已注册）")
+    for fn in EXTERNAL_FUNCTIONS:
+        drop_sql_direct(f"DROP FUNCTION IF EXISTS {fn}")
+
+    print(f"\n[API Connection] 删除 {API_CONNECTION}（如已创建）")
+    drop_sql_direct(f"DROP API CONNECTION IF EXISTS {API_CONNECTION}")
+
+    # ── cz-cli profile ────────────────────────────────────────────────────────
+    print(f"\n[cz-cli profile] 删除 {PROFILE}")
+    if DRY_RUN:
+        print(f"  [DRY RUN] cz-cli profile delete {PROFILE}")
+    else:
+        result = subprocess.run(
+            ["cz-cli", "profile", "delete", PROFILE],
+            capture_output=True, text=True
+        )
+        err = result.stderr.strip() or result.stdout.strip()
+        if result.returncode == 0:
+            print(f"  OK  profile '{PROFILE}' 已删除")
+        elif "not found" in err.lower() or "does not exist" in err.lower():
+            print(f"  SKIP profile '{PROFILE}'（不存在）")
+        else:
+            print(f"  WARN {err[:120]}")
 
     print("\n" + "=" * 60)
     if DRY_RUN:
