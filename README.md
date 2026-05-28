@@ -100,7 +100,7 @@ Studio 任务:       5 个任务全部触发成功
 | `LIFECYCLE 365` | 删除 | Lakehouse 无此概念 |
 | `DATETIME` | `STRING`（ODS）/ `TIMESTAMP`（DWD） | COPY INTO 不支持隐式转换 |
 | `LOAD DATA INPATH 'oss://...'` | `COPY INTO ... FROM VOLUME ... USING CSV` | 语法结构不同 |
-| `${bizdate}` | Python f-string 动态拼接 | Lakehouse SQL 不支持参数变量 |
+| `${bizdate}` | Studio 任务 SQL 中可直接使用（调度运行时替换）；Python/cz-cli 直接执行时用 f-string | — |
 | `GETDATE()` | `CURRENT_TIMESTAMP()` | — |
 | `RLIKE` / `CAST AS STRING` | `REGEXP` / `CAST AS VARCHAR` | — |
 
