@@ -27,5 +27,5 @@ EVT025,SES005,USR005,autocomplete,2024-01-15 16:46:15,/home,search-box,input,sug
 EVT026,SES005,USR005,quickview,2024-01-15 16:49:00,/search,btn-quickview-prod005,button,product_id:PROD005
 EVT027,SES005,USR005,compare_add,2024-01-15 16:55:00,/products/desk-lamp,btn-add-compare,button,product_id:PROD006
 EVT028,SES005,USR005,compare_add,2024-01-15 16:58:00,/products/bluetooth-speaker,btn-add-compare,button,product_id:PROD007
-EVT029,SES005,USR005,compare_view,2024-01-15 17:01:30,/compare,comparison-table,table,products:PROD006,PROD007
+EVT029,SES005,USR005,compare_view,2024-01-15 17:01:30,/compare,comparison-table,table,"products:PROD006,PROD007"
 EVT030,SES005,USR005,wishlist_add,2024-01-15 17:07:00,/cart,btn-save-for-later,button,product_id:PROD005

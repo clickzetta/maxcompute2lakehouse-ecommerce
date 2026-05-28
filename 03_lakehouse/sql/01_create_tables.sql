@@ -1,40 +1,42 @@
 -- Lakehouse ODS 层建表
 -- 对应 01_source/sql/01_create_tables.sql
--- 主要差异：去掉 LIFECYCLE，去掉 COMMENT（可选），分区语法保持不变
+--
+-- ODS 层日期列统一用 STRING 接收 CSV 原始值，避免 COPY INTO 隐式转换报错。
+-- DWD 层转换时再 CAST 为 TIMESTAMP/DATE。
 
 CREATE SCHEMA IF NOT EXISTS ecommerce;
 
 DROP TABLE IF EXISTS ecommerce.customers;
 CREATE TABLE ecommerce.customers (
-    customer_id   STRING,
-    first_name    STRING,
-    last_name     STRING,
-    email         STRING,
-    phone         STRING,
-    registration_date TIMESTAMP,
-    country       STRING,
-    city          STRING,
-    age_group     STRING
+    customer_id       STRING,
+    first_name        STRING,
+    last_name         STRING,
+    email             STRING,
+    phone             STRING,
+    registration_date STRING,
+    country           STRING,
+    city              STRING,
+    age_group         STRING
 );
 
 DROP TABLE IF EXISTS ecommerce.products;
 CREATE TABLE ecommerce.products (
-    product_id    STRING,
-    product_name  STRING,
-    category      STRING,
-    sub_category  STRING,
-    brand         STRING,
-    price         DOUBLE,
-    cost          DOUBLE,
-    supplier_id   STRING,
-    launch_date   TIMESTAMP
+    product_id   STRING,
+    product_name STRING,
+    category     STRING,
+    sub_category STRING,
+    brand        STRING,
+    price        DOUBLE,
+    cost         DOUBLE,
+    supplier_id  STRING,
+    launch_date  STRING
 );
 
 DROP TABLE IF EXISTS ecommerce.orders;
 CREATE TABLE ecommerce.orders (
     order_id         STRING,
     customer_id      STRING,
-    order_date       TIMESTAMP,
+    order_date       STRING,
     order_status     STRING,
     total_amount     DOUBLE,
     shipping_cost    DOUBLE,
@@ -59,8 +61,8 @@ DROP TABLE IF EXISTS ecommerce.web_sessions;
 CREATE TABLE ecommerce.web_sessions (
     session_id               STRING,
     user_id                  STRING,
-    session_start            TIMESTAMP,
-    session_end              TIMESTAMP,
+    session_start            STRING,
+    session_end              STRING,
     page_views               BIGINT,
     session_duration_seconds BIGINT,
     traffic_source           STRING,
@@ -72,25 +74,29 @@ PARTITIONED BY (ds STRING);
 
 DROP TABLE IF EXISTS ecommerce.page_views;
 CREATE TABLE ecommerce.page_views (
-    view_id      STRING,
-    session_id   STRING,
-    user_id      STRING,
-    page_url     STRING,
-    view_time    TIMESTAMP,
-    time_on_page BIGINT,
-    referrer_url STRING
+    page_view_id        STRING,
+    session_id          STRING,
+    user_id             STRING,
+    page_url            STRING,
+    page_title          STRING,
+    timestamp           STRING,
+    time_on_page_seconds BIGINT,
+    referrer_url        STRING,
+    exit_page           STRING
 )
 PARTITIONED BY (ds STRING);
 
 DROP TABLE IF EXISTS ecommerce.user_events;
 CREATE TABLE ecommerce.user_events (
-    event_id    STRING,
-    user_id     STRING,
-    event_type  STRING,
-    event_time  TIMESTAMP,
-    page_url    STRING,
-    element_id  STRING,
-    event_value STRING
+    event_id        STRING,
+    session_id      STRING,
+    user_id         STRING,
+    event_type      STRING,
+    event_timestamp STRING,
+    page_url        STRING,
+    element_id      STRING,
+    element_type    STRING,
+    event_data      STRING
 )
 PARTITIONED BY (ds STRING);
 

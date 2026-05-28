@@ -71,9 +71,10 @@ LOAD DATA INPATH 'oss://bucket/data/customers.csv' INTO TABLE customers;
 
 -- Lakehouse
 COPY INTO ecommerce.customers
-FROM VOLUME ecommerce.ecommerce_vol
-FILES = ('raw/customers.csv')
-FILE_FORMAT = (TYPE = 'CSV' FIELD_DELIMITER = ',' SKIP_HEADER = 1);
+FROM VOLUME ecommerce_vol
+USING CSV
+OPTIONS ('header' = 'true')
+FILES ('raw/customers.csv');
 ```
 
 ### 5. INSERT OVERWRITE 分区写入
